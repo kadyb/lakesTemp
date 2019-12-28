@@ -1,14 +1,12 @@
-var geometry = ee.Geometry.MultiPoint(
-        [[15.36, 54.13],
-         [16.11, 54.25]]
-);
+var table = [ ]; // input pointsFeatures.txt here
+var table = ee.FeatureCollection(table);
 
 // Function to mask clouds based on the pixel_qa band of Landsat 8 SR data
 function maskL8sr(image) {
   // Bits 3 and 5 are cloud shadow and cloud, respectively
   var cloudShadowBitMask = (1 << 3);
   var cloudsBitMask = (1 << 5);
-  // Get the pixel QA band.
+  // Get the pixel QA band
   var qa = image.select('pixel_qa');
   // Both flags should be set to zero, indicating clear conditions
   var mask = qa.bitwiseAnd(cloudShadowBitMask).eq(0)
@@ -16,30 +14,27 @@ function maskL8sr(image) {
   return image.updateMask(mask);
 }
 
-var pixelsize = 30;
+// Load the image data
 var data = ee.ImageCollection('LANDSAT/LC08/C01/T1_SR')
               //.filterDate('2013-04-01', '2019-12-31')
               .filter(ee.Filter.calendarRange(4, 10, 'month'))
-              .filterBounds(geometry)
-              .filterMetadata('CLOUD_COVER', 'less_than', 40)
+              .filterBounds(table)
+              .filterMetadata('CLOUD_COVER', 'less_than', 70)
               .map(maskL8sr)
               .select(['B1', 'B2', 'B3', 'B4', 'B5', 'B6', 
-                        'B7', 'B10', 'B11', 'sr_aerosol'])
-              .getRegion(geometry, pixelsize);
+                      'B7', 'B10', 'B11', 'sr_aerosol']);
 
-var keys = ee.List(data.get(0));
-var featureCollection = ee.FeatureCollection(data.slice(1).map(function(singleData){
-  singleData = ee.List(singleData);
-  var dict = ee.Dictionary.fromLists(keys, singleData);
-  var point = ee.Geometry.Point([dict.get('longitude'), dict.get('latitude')]);
-  return ee.Feature(point, dict);
-}));
+// Map over the images and use reduceRegions() to extract data
+var featureCollection = data.map(function(image){
+  var dataOutput = image.reduceRegions(table, ee.Reducer.mean(), 30);
+  return dataOutput;
+}).flatten();
+var featureCollection = featureCollection.filterMetadata('B1', 'not_equals', null);
 
-var featureCollection = featureCollection.filter(ee.Filter.notNull(keys));
-
+// Export data as CSV
 Export.table.toDrive({
   collection: featureCollection,
-  description: 'CSV',
-  selectors: ['id', 'B1', 'B2', 'B3', 'B4','B5', 'B6',
-              'B7', 'B10', 'B11', 'sr_aerosol']
+  description: 'Landsat8_GEE',
+  selectors: ['system:index', 'oid', 'B1', 'B2', 'B3', 'B4', 
+              'B5', 'B6','B7', 'B10', 'B11', 'sr_aerosol']
 });
