@@ -1,4 +1,5 @@
 download_hydro = function(months, years) {
+   # Note these are hydrological months, not calendar months
    if(!is.character(months) || nchar(months) != 2) stop("Invalid month format")
    
    # Example URL:
