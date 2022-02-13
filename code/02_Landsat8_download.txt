@@ -19,13 +19,13 @@ var data = ee.ImageCollection('LANDSAT/LC08/C01/T1_SR')
               //.filterDate('2013-04-01', '2019-12-31')
               .filter(ee.Filter.calendarRange(4, 10, 'month'))
               .filterBounds(table)
-              .filterMetadata('CLOUD_COVER', 'less_than', 70)
+              .filterMetadata('CLOUD_COVER', 'less_than', 60)
               .map(maskL8sr)
               .select(['B1', 'B2', 'B3', 'B4', 'B5', 'B6', 
                       'B7', 'B10', 'B11', 'sr_aerosol']);
 
 // Map over the images and use reduceRegions() to extract data
-var featureCollection = data.map(function(image){
+var featureCollection = data.map(function(image) {
   var dataOutput = image.reduceRegions(table, ee.Reducer.mean(), 30);
   return dataOutput;
 }).flatten();
@@ -34,7 +34,7 @@ var featureCollection = featureCollection.filterMetadata('B1', 'not_equals', nul
 // Export data as CSV
 Export.table.toDrive({
   collection: featureCollection,
-  description: 'Landsat8_GEE',
-  selectors: ['system:index', 'oid', 'B1', 'B2', 'B3', 'B4', 
+  description: 'Landsat8_C1',
+  selectors: ['system:index', 'oid', 'B1', 'B2', 'B3', 'B4',
               'B5', 'B6','B7', 'B10', 'B11', 'sr_aerosol']
 });
