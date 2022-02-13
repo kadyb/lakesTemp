@@ -1,4 +1,7 @@
 # Lakes temperature
 Lakes temperature analysis based on satellite images
 
-The source of hydrological data is the Institute of Meteorology and Water Management - National Research Institute in Poland.
+### Acknowledgement
+
+The source of the hydrological data is the Institute of Meteorology and Water Management - National Research Institute (https://www.imgw.pl/).
+Landsat-8 images courtesy of the U.S. Geological Survey (https://earthexplorer.usgs.gov/).
