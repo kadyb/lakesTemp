@@ -1,47 +1,59 @@
-# read data
-fnames = list.files("data/reflectance-GEE", full.names = TRUE, pattern = ".+[8]+.+\\.csv")
-result = read.csv(fnames)
+fnames = list.files("data/reflectance", full.names = TRUE, pattern = ".+[8]+.+\\.csv")
+
+##### Landsat 8 SR #####
+SR = read.csv(fnames[1])
 
 # extract dates
-result$date = substr(result$system.index, 13, 20)
-result$date = as.Date(result$date, format = "%Y%m%d")
+SR$date = substr(SR$system.index, 13, 20)
+SR$date = as.Date(SR$date, format = "%Y%m%d")
 
-# remove 'system.index' col
-result = result[, -1]
+# remove 'system.index' column
+SR = SR[, -1]
+
+# scale values
+scale = 2.75e-05
+offset = -0.2
+SR[, 2:8] = apply(SR[, 2:8], MARGIN = 2, FUN = function(x) x * scale + offset)
+SR[, "ST_B10"] = SR[, "ST_B10"] * 0.00341802 + 149
 
 # clean outliers
-result = result[result$B1 < 350, ]
+SR = SR[SR$SR_B1 < 0.14, ]
 for (i in 2:8) {
 
-  idx = result[, i] > 0 # reflectance must be above 0
-  result = result[idx, ]
+  idx = SR[, i] > 0 # reflectance must be above 0
+  SR = SR[idx, ]
 
 }
-result = result[result$B11 > 1500, ]
-
-# specify the aerosol content
-aerosol = data.frame(
-   low = c(66, 68, 96, 100),
-   medium = c(130, 132, 160, 164),
-   high = c(194, 196, 224, 228)
-)
-
-result$areosols = ifelse(result$sr_aerosol %in% aerosol$low, "low", NA)
-result$areosols = ifelse(result$sr_aerosol %in% aerosol$medium, "medium", result$areosols)
-result$areosols = ifelse(result$sr_aerosol %in% aerosol$high, "high", result$areosols)
-result$areosols = as.factor(result$areosols)
-result = result[, -11]
-
-# convert to Kelvin
-result$B10 = result$B10 / 10
-result$B11 = result$B11 / 10
+SR = SR[SR$ST_B10 > 273.15, ]
 
 # check duplicates
-# (some points may be visible on two different
-# satellite scenes acquired captured on the same day)
-sum(duplicated(result[, c(1, 11)]))
+sum(duplicated(SR[, c(1, 10)]))
 # remove duplicates
-result = result[!duplicated(result[, c(1, 11)]), ]
+SR = SR[!duplicated(SR[, c(1, 10)]), ]
 
 # save
-write.csv2(result, "data/Landsat8processed.csv", row.names = FALSE)
+write.csv2(SR, "data/SR_processed.csv", row.names = FALSE)
+
+
+##### Landsat 8 TOA #####
+TOA = read.csv(fnames[2])
+
+TOA$date = substr(TOA$system.index, 13, 20)
+TOA$date = as.Date(TOA$date, format = "%Y%m%d")
+
+TOA = TOA[, -1]
+
+TOA = TOA[TOA$B1 < 0.15, ]
+for (i in 2:8) {
+
+  idx = TOA[, i] > 0
+  TOA = TOA[idx, ]
+
+}
+TOA = TOA[TOA$B10 > 273.15, ]
+
+
+sum(duplicated(TOA[, c(1, 11)]))
+TOA = TOA[!duplicated(TOA[, c(1, 11)]), ]
+
+write.csv2(TOA, "data/TOA_processed.csv", row.names = FALSE)
