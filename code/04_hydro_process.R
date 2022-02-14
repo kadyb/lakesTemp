@@ -1,4 +1,4 @@
-source("utils/download_hydro.R")
+source("code/utils/download_hydro.R")
 
 # download hydro data
 hydro_data = download_hydro(1:12, 2013:2020) # Landsat 8 time range
@@ -12,10 +12,10 @@ colnames(temp) = short_colnames
 
 # select stations
 stations = read.csv2("data/hydro_stations.csv")
-temp = temp[temp$ID %in% stations$Kod.stacji, ]
+temp = temp[temp$ID %in% stations$ID, ]
 
 # select warm months
-temp$month = as.numeric(format(temp$Date, "%m"))
+temp$month = as.numeric(format(temp$date, "%m"))
 temp = temp[temp$month >= 4 & temp$month <= 10, ]
 
 # save data

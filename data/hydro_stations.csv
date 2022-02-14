@@ -1,39 +1,39 @@
-Kod.stacji,Nazwa.stac,Rzeka
-"151160030",Radzy≈Ñ,Jez. S≈Çawskie
-"152140030",Przyjezierze,jez. Morzycko
-"152150060",Prze≈Çazy,jez. Nies≈Çysz
-"152170140",Powidz,Jez. Powidzkie
-"152180080",Kruszwica,jez. Gop≈Ço
-"153150060",I≈Ñsko,jez. I≈Ñsko
-"153150140",Lubieszewo,jez. Lubie
-"153150160",Wyspa Pokrzywka,Jez. Ostrowite
-"153160040",Czaplinek,jez. Drawsko
-"153160050",Sikory,jez. Komorze
-"153160060",Nakielno,jez. Bety≈Ñ Wielki
-"153170020",Buntowo,Jez. S≈Çawianowskie
-"153170080",Charzykowy,Jez. Charzykowskie
-"153170090",Sƒôp√≥lno Kraje≈Ñskie,Jez. Sƒôpole≈Ñskie
-"153170130",Jeziorna,Jez. Wdzydze
-"153190070",Bachotek,Jez. Bachotek
-"153190080",I≈Çawa,Jez. Jeziorak
-"153200140",Dadaj,jez. Dadaj
-"153210100",Ruciane-Nida,Jez. Nidzkie
-"153210110",Miko≈Çajki,Jez. Miko≈Çajskie
-"153210130",G≈Çodowo,jez. ≈öniardwy
-"153210200",Maldanin,jez. Ro≈õ
-"153220050",E≈Çk,Jez. E≈Çckie
-"153220120",Sordachy,jez. Selmƒôt Wielki
-"153220190",Rajgr√≥d,Jez. Rajgrodzkie
-"153230040",Przewiƒô≈∫,Jez. Bia≈Çe Augustowskie
-"153230050",Przewiƒô≈∫,Jez. Studzieniczne
-"154160010",Unie≈õcie,Jez. Jamno
-"154170050",Gardna Wielka,Jez. Gardno
-"154170090",Izbica,Jez. ≈Åebsko
-"154170140",Jasie≈Ñ,Jez. Jasie≈Ñ Pd.
-"154170190",Borucino,Jez. Radu≈Ñskie G√≥rne
-"154210040",Kronowo,jez. Dejguny
-"154210060",Przysta≈Ñ,jez. Mamry
-"154220020",Borki,jez. Litygajno
-"154220070",W√≥lka,jez. Rospuda Filipowska
-"154220080",Wr√≥bel,jez. Ha≈Ñcza
-"154230020",Wigry,jez. Wigry
+ID;name;lake
+151160030;RadzyÒ;Jez. S≥awskie
+152140030;Przyjezierze;jez. Morzycko
+152150060;Prze≥azy;jez. Nies≥ysz
+152170140;Powidz;Jez. Powidzkie
+152180080;Kruszwica;jez. Gop≥o
+153150060;IÒsko;jez. IÒsko
+153150140;Lubieszewo;jez. Lubie
+153150160;Wyspa Pokrzywka;Jez. Ostrowite
+153160040;Czaplinek;jez. Drawsko
+153160050;Sikory;jez. Komorze
+153160060;Nakielno;jez. BetyÒ Wielki
+153170020;Buntowo;Jez. S≥awianowskie
+153170080;Charzykowy;Jez. Charzykowskie
+153170090;SÍpÛlno KrajeÒskie;Jez. SÍpoleÒskie
+153170130;Jeziorna;Jez. Wdzydze
+153190070;Bachotek;Jez. Bachotek
+153190080;I≥awa;Jez. Jeziorak
+153200140;Dadaj;jez. Dadaj
+153210100;Ruciane-Nida;Jez. Nidzkie
+153210110;Miko≥ajki;Jez. Miko≥ajskie
+153210130;G≥odowo;jez. åniardwy
+153210200;Maldanin;jez. Roú
+153220050;E≥k;Jez. E≥ckie
+153220120;Sordachy;jez. SelmÍt Wielki
+153220190;RajgrÛd;Jez. Rajgrodzkie
+153230040;PrzewiÍü;Jez. Bia≥e Augustowskie
+153230050;PrzewiÍü;Jez. Studzieniczne
+154160010;Unieúcie;Jez. Jamno
+154170050;Gardna Wielka;Jez. Gardno
+154170090;Izbica;Jez. £ebsko
+154170140;JasieÒ;Jez. JasieÒ Pd.
+154170190;Borucino;Jez. RaduÒskie GÛrne
+154210040;Kronowo;jez. Dejguny
+154210060;PrzystaÒ;jez. Mamry
+154220020;Borki;jez. Litygajno
+154220070;WÛlka;jez. Rospuda Filipowska
+154220080;WrÛbel;jez. HaÒcza
+154230020;Wigry;jez. Wigry
