@@ -1,7 +1,7 @@
 var table = [ ]; // input pointsFeatures.txt here
 var table = ee.FeatureCollection(table);
 
-// Function to mask clouds based on the pixel_qa band of Landsat 8 SR data
+// Function to mask clouds based on the QA_PIXEL band of Landsat 8 SR data
 function maskL8sr(image) {
   // Bits 4 and 3 are cloud shadow and cloud, respectively
   var cloudShadowBitMask = (1 << 4);
@@ -34,7 +34,7 @@ var featureCollection = featureCollection.filterMetadata('SR_B1', 'not_equals', 
 // Export data as CSV
 Export.table.toDrive({
   collection: featureCollection,
-  description: 'Landsat8_C2',
+  description: 'Landsat8_SR',
   selectors: ['system:index', 'oid', 'SR_B1', 'SR_B2', 'SR_B3',
               'SR_B4', 'SR_B5', 'SR_B6','SR_B7', 'ST_B10']
 });
