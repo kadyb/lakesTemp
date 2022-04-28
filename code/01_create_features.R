@@ -1,8 +1,8 @@
-library("sf")
+library("terra")
 
-pts = read_sf("data/coordinates/coords.shp")
+pts = vect("data/coordinates/coords.shp")
 pts$text = NA
-coords = st_coordinates(pts)
+coords = crds(pts)
 coords = round(coords, 5)
 
 ### sample features:
