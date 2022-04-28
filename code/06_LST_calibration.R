@@ -98,8 +98,6 @@ p3
 # histogram (after calibration; testset)
 p4 = ggplot(test, aes(T - mdl1)) +
   geom_histogram(binwidth = 1) +
-  geom_vline(aes(xintercept = mean(T - mdl1)),
-             color = "blue", linetype = "dashed", size = 1) +
   xlab("Temperature difference [K]") +
   ylab("Frequency") +
   theme_bw() +

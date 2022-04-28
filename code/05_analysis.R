@@ -73,6 +73,7 @@ test$T_rf = pred2$predictions
 test = merge(test, LST, by = c("ID", "date"))
 test = merge(test, SR, by = c("ID", "date"))
 
+### validation on test dataset ###
 round(mae(test$T, test$T_lm), 2) #> 1.72
 round(mae(test$T, test$T_rf), 2) #> 1.38
 round(mae(test$T, test$T_lst), 2) #> 2.62
@@ -88,44 +89,61 @@ round(cor(test$T, test$T_rf), 2) #> 0.94
 round(cor(test$T, test$T_lst), 2) #> 0.88
 round(cor(test$T, test$ST_B10), 2) #> 0.90
 
+### statistics from train dataset ###
+round(mae(train$T, mdl1$fitted.values), 2) #> 1.73
+round(mae(train$T, mdl2$predictions), 2) #> 1.29
+
+round(rmse(train$T, mdl1$fitted.values), 2) #> 2.28
+round(rmse(train$T, mdl2$predictions), 2) #> 1.66
+
+round(cor(train$T, mdl1$fitted.values), 2) #> 0.91
+round(cor(train$T, mdl2$predictions), 2) #> 0.95
+
+
 # correlation and rmse for all (test and train) lakes
+TOA$T_lm = predict(mdl1, TOA)
 TOA$T_rf = predict(mdl2, TOA)$predictions
 n = length(unique(TOA$ID))
-tbl = data.frame(ID = unique(TOA$ID), mae = double(n), rmse = double(n),
-                 cor = double(n))
+tbl = data.frame(ID = unique(TOA$ID), mae_lm = double(n), mae_rf = double(n),
+                 rmse_lm = double(n), rmse_rf = double(n), cor_lm = double(n),
+                 cor_rf = double(n))
 for (i in seq_along(tbl$ID)) {
-  sel = tbl$ID[i]
-  tbl$mae[i] = mae(TOA$T[TOA$ID == sel], TOA$T_rf[TOA$ID == sel])
-  tbl$rmse[i] = rmse(TOA$T[TOA$ID == sel], TOA$T_rf[TOA$ID == sel])
-  tbl$cor[i] = cor(TOA$T[TOA$ID == sel], TOA$T_rf[TOA$ID == sel])
+  sel = which(TOA$ID == tbl$ID[i])
+  tbl$mae_lm[i] = mae(TOA$T[sel], TOA$T_lm[sel])
+  tbl$mae_rf[i] = mae(TOA$T[sel], TOA$T_rf[sel])
+  tbl$rmse_lm[i] = rmse(TOA$T[sel], TOA$T_lm[sel])
+  tbl$rmse_rf[i] = rmse(TOA$T[sel], TOA$T_rf[sel])
+  tbl$cor_lm[i] = cor(TOA$T[sel], TOA$T_lm[sel])
+  tbl$cor_rf[i] = cor(TOA$T[sel], TOA$T_rf[sel])
 }
-tbl[, 2:4] = round(tbl[, 2:4], 2)
+tbl[, 2:7] = round(tbl[, 2:7], 2)
 tbl = merge(tbl, hydro_stations[, c(1, 3)], by = "ID")
 tbl$test = ifelse(tbl$ID %in% test_lakes$ID, "x", "")
-tbl = tbl[, c(5:6, 2:4)]
-colnames(tbl) = c("Lake", "Test set", "MAE [K]", "RMSE [K]", "COR")
+tbl = tbl[, c(8:9, 2:7)]
+colnames(tbl) = c("Lake", "Test set", "MAE LM [K]", "MAE RF [K]",
+                  "RMSE LM [K]", "RMSE RF [K]", "COR LM", "COR RF")
 write.csv2(tbl, "results/lakes_stats.csv", row.names = FALSE)
 
 # correlation for months (on testset)
 n = length(levels(test$month))
 tbl = data.frame(month = levels(test$month), rmse_lm = double(n), rmse_rf = double(n),
-                 rmse_lst = double(n), rmse_ST_B10 = double(n), cor_lm = double(n),
-                 cor_rf = double(n), cor_lst = double(n), cor_ST_B10 = double(n))
+                 rmse_lst = double(n), rmse_lst_l2 = double(n), cor_lm = double(n),
+                 cor_rf = double(n), cor_lst = double(n), cor_lst_l2 = double(n))
 for (i in seq_along(tbl$month)) {
-  sel = levels(test$month)[i]
-  tbl$rmse_lm[i] = rmse(test$T[test$month == sel], test$T_lm[test$month == sel])
-  tbl$rmse_rf[i] = rmse(test$T[test$month == sel], test$T_rf[test$month == sel])
-  tbl$rmse_lst[i] = rmse(test$T[test$month == sel], test$T_lst[test$month == sel])
-  tbl$rmse_ST_B10[i] = rmse(test$T[test$month == sel], test$ST_B10[test$month == sel])
-  tbl$cor_lm[i] = cor(test$T[test$month == sel], test$T_lm[test$month == sel])
-  tbl$cor_rf[i] = cor(test$T[test$month == sel], test$T_rf[test$month == sel])
-  tbl$cor_lst[i] = cor(test$T[test$month == sel], test$T_lst[test$month == sel])
-  tbl$cor_ST_B10[i] = cor(test$T[test$month == sel], test$ST_B10[test$month == sel])
+  sel = which(test$month == levels(test$month)[i])
+  tbl$rmse_lm[i] = rmse(test$T[sel], test$T_lm[sel])
+  tbl$rmse_rf[i] = rmse(test$T[sel], test$T_rf[sel])
+  tbl$rmse_lst[i] = rmse(test$T[sel], test$T_lst[sel])
+  tbl$rmse_lst_l2[i] = rmse(test$T[sel], test$ST_B10[sel])
+  tbl$cor_lm[i] = cor(test$T[sel], test$T_lm[sel])
+  tbl$cor_rf[i] = cor(test$T[sel], test$T_rf[sel])
+  tbl$cor_lst[i] = cor(test$T[sel], test$T_lst[sel])
+  tbl$cor_lst_l2[i] = cor(test$T[sel], test$ST_B10[sel])
 }
 tbl[, 2:9] = round(tbl[, 2:9], 2)
 tbl$month = c("April", "May", "June", "July", "August", "September", "October")
 colnames(tbl) = c("Month", "RMSE LM [K]", "RMSE RF [K]", "RMSE LST [K]",
-                  "RMSE ST B10 [K]", "COR LM", "COR RF", "COR LST", "COR ST B10")
+                  "RMSE LST_L2 [K]", "COR LM", "COR RF", "COR LST", "COR LST_L2")
 write.csv2(tbl, "results/month_stats.csv", row.names = FALSE)
 
 ## save results from testset

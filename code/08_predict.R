@@ -27,14 +27,14 @@ rmask = ifel(ras[["B10"]] == 0, NA, ras[["B10"]])
 pred = rast("West_preprocess.tif")
 pred = pred - 273.15
 pred = mask(pred, rmask)
-writeRaster(pred, "West_postprocess.tif", gdal = "COMPRESS=DEFLATE")
+writeRaster(pred, "images/predict/West_postprocess.tif", gdal = "COMPRESS=DEFLATE")
 
 ########################
 ###### predict single lakes
 lakes_geom = vect("data/vector/lakes.gpkg")
 
 lakes = list.files("images", pattern = "\\.tif$")
-lakes = lakes[!grepl("West.tif"), lakes] # remove
+lakes = lakes[!grepl("West.tif", lakes)] # remove
 lakes_names = substr(lakes, 1, nchar(lakes) - 4)
 # Drawsko, Elckie, Goplo, Lebsko respectively
 dates = c("20180529", "20211025", "20210608", "20150818")
@@ -68,7 +68,7 @@ for (i in seq_along(lakes)) {
   pred = pred - 273.15
   pred = mask(pred, rmask)
   pred = crop(pred, lakes_geom[lakes_geom$name == lakes_names[i]], mask = TRUE)
-  save_path = paste0(lakes_names[i], "_", "T", ".tif")
+  save_path = paste0("images/predict/", lakes_names[i], "_", "T", ".tif")
   writeRaster(pred, save_path, gdal = "COMPRESS=DEFLATE")
 
 }
