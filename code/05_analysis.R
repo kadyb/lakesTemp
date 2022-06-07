@@ -78,16 +78,19 @@ round(mae(test$T, test$T_lm), 2) #> 1.72
 round(mae(test$T, test$T_rf), 2) #> 1.38
 round(mae(test$T, test$T_lst), 2) #> 2.62
 round(mae(test$T, test$ST_B10), 2) #> 2.95
+round(mae(test$T, test$B10), 2) #> 2.11
 
 round(rmse(test$T, test$T_lm), 2) #> 2.29
 round(rmse(test$T, test$T_rf), 2) #> 1.83
 round(rmse(test$T, test$T_lst), 2) #> 3.35
 round(rmse(test$T, test$ST_B10), 2) #> 3.68
+round(rmse(test$T, test$B10), 2) #> 2.70
 
 round(cor(test$T, test$T_lm), 2) #> 0.91
 round(cor(test$T, test$T_rf), 2) #> 0.94
 round(cor(test$T, test$T_lst), 2) #> 0.88
 round(cor(test$T, test$ST_B10), 2) #> 0.90
+round(cor(test$T, test$B10), 2) #> 0.88
 
 ### statistics from train dataset ###
 round(mae(train$T, mdl1$fitted.values), 2) #> 1.73
