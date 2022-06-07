@@ -86,6 +86,7 @@ plot_thermal = function(rast, mat) {
 
   # plot raster with legend
   plot(rast, axes = FALSE, col = color)
+  sbar(type = "bar", below = "m", divs = 3, cex = 0.9)
   plot(line, col = "black", lwd = 2, add = TRUE)
 
   # create and smooth thermal profile
