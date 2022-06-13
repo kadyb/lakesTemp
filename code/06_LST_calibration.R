@@ -21,7 +21,7 @@ mdl1 = lm(T ~ ST_B10, data = train) # with intercept
 mdl2 = lm(T ~ ST_B10 + 0, data = train) # without intercept
 summary(mdl1)
 summary(mdl2)
-calib = mean(train$T - train$ST_B10) # determine systematic bias
+calib = mean(train$ST_B10 - train$T) # determine systematic bias
 
 # predict and validate
 test$mdl1 = predict(mdl1, test)
@@ -61,11 +61,11 @@ p1 = ggplot(train, aes(ST_B10, T)) +
 p1
 
 # histogram (before calibration; trainset)
-p2 = ggplot(train, aes(T - ST_B10)) +
+p2 = ggplot(train, aes(ST_B10 - T)) +
   geom_histogram(binwidth = 1) +
-  geom_vline(aes(xintercept = mean(T - ST_B10)),
+  geom_vline(aes(xintercept = mean(ST_B10 - T)),
              color = "blue", linetype = "dashed", size = 1) +
-  annotate("text", x = 0, y = 305, label = round(calib, 2), col = "blue") +
+  annotate("text", x = 0.5, y = 310, label = round(calib, 2), col = "blue") +
   xlab(NULL) +
   ylab("Frequency") +
   theme_bw() +
@@ -96,7 +96,7 @@ p3 = ggplot(test, aes(mdl1, T)) +
 p3
 
 # histogram (after calibration; testset)
-p4 = ggplot(test, aes(T - mdl1)) +
+p4 = ggplot(test, aes(mdl1 - T)) +
   geom_histogram(binwidth = 1) +
   xlab("Temperature difference [K]") +
   ylab("Frequency") +
@@ -110,4 +110,5 @@ p4 = ggplot(test, aes(T - mdl1)) +
 p4
 
 plot_grid(p1, p2, p3, p4, ncol = 2)
-ggsave("plots/calibration.png", width = 7, height = 4, units = "in")
+ggsave("plots/calibration.pdf", device = cairo_pdf, width = 7, height = 4,
+       units = "in")

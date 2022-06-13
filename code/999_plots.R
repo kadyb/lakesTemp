@@ -59,7 +59,7 @@ ggsave("plots/comparison.pdf", device = cairo_pdf, width = 7, height = 4,
        units = "in")
 
 ## differences histogram
-ggplot(test_long, aes(T - value)) +
+ggplot(test_long, aes(value - T)) +
   geom_histogram(bins = 20) +
   geom_vline(xintercept = 0, linetype = "dashed", color = "red") +
   xlab("Difference [K]") +
