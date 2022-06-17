@@ -62,8 +62,8 @@ if (!dir.exists("results")) dir.create("results")
 saveRDS(mdl2, "results/rf_model.rds")
 
 ### comparison
-mae = function(actual, predicted) {
-  mean(abs(actual - predicted))
+mbe = function(actual, predicted) {
+  mean(predicted - actual)
 }
 rmse = function(actual, predicted) {
   sqrt(mean((actual - predicted)^2))
@@ -74,11 +74,12 @@ test = merge(test, LST, by = c("ID", "date"))
 test = merge(test, SR, by = c("ID", "date"))
 
 ### validation on test dataset ###
-round(mae(test$T, test$T_lm), 2) #> 1.72
-round(mae(test$T, test$T_rf), 2) #> 1.38
-round(mae(test$T, test$T_lst), 2) #> 2.62
-round(mae(test$T, test$ST_B10), 2) #> 2.95
-round(mae(test$T, test$B10), 2) #> 2.11
+# table 1
+round(mbe(test$T, test$T_lm), 2) #> -0.01
+round(mbe(test$T, test$T_rf), 2) #> -0.06
+round(mbe(test$T, test$T_lst), 2) #> 2.04
+round(mbe(test$T, test$ST_B10), 2) #> 2.55
+round(mbe(test$T, test$B10), 2) #> -0.73
 
 round(rmse(test$T, test$T_lm), 2) #> 2.29
 round(rmse(test$T, test$T_rf), 2) #> 1.83
@@ -92,9 +93,15 @@ round(cor(test$T, test$T_lst), 2) #> 0.88
 round(cor(test$T, test$ST_B10), 2) #> 0.90
 round(cor(test$T, test$B10), 2) #> 0.88
 
+round(sd(test$T_lm), 2) #> 4.98
+round(sd(test$T_rf), 2) #> 4.92
+round(sd(test$T_lst), 2) #> 5.52
+round(sd(test$ST_B10), 2) #> 5.94
+round(sd(test$B10), 2) #> 4.83
+
 ### statistics from train dataset ###
-round(mae(train$T, mdl1$fitted.values), 2) #> 1.73
-round(mae(train$T, mdl2$predictions), 2) #> 1.29
+round(mbe(train$T, mdl1$fitted.values), 2) #> 0
+round(mbe(train$T, mdl2$predictions), 2) #> 0.01
 
 round(rmse(train$T, mdl1$fitted.values), 2) #> 2.28
 round(rmse(train$T, mdl2$predictions), 2) #> 1.66
@@ -102,32 +109,38 @@ round(rmse(train$T, mdl2$predictions), 2) #> 1.66
 round(cor(train$T, mdl1$fitted.values), 2) #> 0.91
 round(cor(train$T, mdl2$predictions), 2) #> 0.95
 
+round(sd(mdl1$fitted.values), 2) #> 4.92
+round(sd(mdl2$predictions), 2) #> 5
 
 # correlation and rmse for all (test and train) lakes
+# supplementary table 2
 TOA$T_lm = predict(mdl1, TOA)
 TOA$T_rf = predict(mdl2, TOA)$predictions
 n = length(unique(TOA$ID))
-tbl = data.frame(ID = unique(TOA$ID), mae_lm = double(n), mae_rf = double(n),
+tbl = data.frame(ID = unique(TOA$ID), mbe_lm = double(n), mbe_rf = double(n),
                  rmse_lm = double(n), rmse_rf = double(n), cor_lm = double(n),
-                 cor_rf = double(n))
+                 cor_rf = double(n), sd_lm = double(n), sd_rf = double(n))
 for (i in seq_along(tbl$ID)) {
   sel = which(TOA$ID == tbl$ID[i])
-  tbl$mae_lm[i] = mae(TOA$T[sel], TOA$T_lm[sel])
-  tbl$mae_rf[i] = mae(TOA$T[sel], TOA$T_rf[sel])
+  tbl$mbe_lm[i] = mbe(TOA$T[sel], TOA$T_lm[sel])
+  tbl$mbe_rf[i] = mbe(TOA$T[sel], TOA$T_rf[sel])
   tbl$rmse_lm[i] = rmse(TOA$T[sel], TOA$T_lm[sel])
   tbl$rmse_rf[i] = rmse(TOA$T[sel], TOA$T_rf[sel])
   tbl$cor_lm[i] = cor(TOA$T[sel], TOA$T_lm[sel])
   tbl$cor_rf[i] = cor(TOA$T[sel], TOA$T_rf[sel])
+  tbl$sd_lm[i] = sd(TOA$T_lm[sel])
+  tbl$sd_rf[i] = sd(TOA$T_rf[sel])
 }
-tbl[, 2:7] = round(tbl[, 2:7], 2)
+tbl[, 2:9] = round(tbl[, 2:9], 2)
 tbl = merge(tbl, hydro_stations[, c(1, 3)], by = "ID")
 tbl$test = ifelse(tbl$ID %in% test_lakes$ID, "x", "")
-tbl = tbl[, c(8:9, 2:7)]
-colnames(tbl) = c("Lake", "Test set", "MAE LM [K]", "MAE RF [K]",
-                  "RMSE LM [K]", "RMSE RF [K]", "COR LM", "COR RF")
+tbl = tbl[, c(10:11, 2:9)]
+colnames(tbl) = c("Lake", "Test set", "MBE LM [K]", "MBE RF [K]",
+                  "RMSE LM [K]", "RMSE RF [K]", "COR LM", "COR RF",
+                  "SD LM [K]", "SD RF [K]")
 write.csv2(tbl, "results/lakes_stats.csv", row.names = FALSE)
 
-# correlation for months (on testset)
+# correlation and rmse for months (on testset)
 n = length(levels(test$month))
 tbl = data.frame(month = levels(test$month), rmse_lm = double(n), rmse_rf = double(n),
                  rmse_lst = double(n), rmse_lst_l2 = double(n), cor_lm = double(n),
