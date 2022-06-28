@@ -14,13 +14,13 @@ The `data` folder contains the following files:
 
 ## Reproduction
 1. Open the `geomorph_clustering.Rproj` project file in [RStudio](https://rstudio.com/).
-2. Create a JavaScript object with coordinates using `01_create_features.R` that will be used in Google Earth Engine.
+2. Create a JavaScript object with coordinates using `01_create_features.R` that will be used in [Google Earth Engine](https://earthengine.google.com/).
 3. Download reflectance data from Google Earth Engine using `02_Landsat8_SR_download.js` (Surface Reflectance) and `02_Landsat8_TOA_download.js` (Top-of-Atmosphere Reflectance).
 You must use the coordinates from the `pointsFeatures.txt` file.
 4. Download data from hydrological stations (water temperature) using `04_hydro_process.R`.
 5. The main part of the analysis was done in the `05_analysis.R` script.
 It includes training of LM and RF models and validation of all LM, RF, LST and LST-L2 models.
-6. `06_LST_calibration.R` was used to compare calibration methods for the LST-L2 product using empirical data.
+6. `06_LST_calibration.R` was used to compare calibration methods for the LST-L2 (USGS) product using empirical data.
 7. Entire satellite scenes for spatial prediction can be downloaded using script `07_download_scene.js`.
 8. Prediction using LM or RF model can be done with script `08_predict.R` for individual lakes or the entire scene.
 The `{terra}` package was used to process the raster data.
