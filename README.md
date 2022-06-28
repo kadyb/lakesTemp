@@ -15,6 +15,12 @@ The `data` folder contains the following files:
 ## Reproduction
 
 ## Results
+The results of this research are saved in `results` folder:
+- `lakes_stats.csv`- performance statistics of LM and RF models considering training and test lakes
+- `month_stats.csv` - performance statistics of LM and RF models by month
+- `predictions_testset.csv` - testset with actual measurements and estimated by 4 models (LM, RF, LST, LST-L2)
+- `rf_model.rds` - trained RF model in *.rds* format (`{ranger}` package is required)
+- `images/predict/` folder - 4 spatial examples of RF model results for different dates
 
 ## Acknowledgement
 The source of the hydrological data is the Institute of Meteorology and Water Management - National Research Institute (https://www.imgw.pl/).
