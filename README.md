@@ -20,7 +20,8 @@ The results of this research are saved in `results` folder:
 - `month_stats.csv` - performance statistics of LM and RF models by month
 - `predictions_testset.csv` - testset with actual measurements and estimated by 4 models (LM, RF, LST, LST-L2)
 - `rf_model.rds` - trained RF model in *.rds* format (`{ranger}` package is required)
-- `images/predict/` folder - 4 spatial examples of RF model results for different dates
+
+Additionally, in the `images/predict` folder there are 4 exemplary results of the spatial prediction by the RF model for different terms.
 
 ## Acknowledgement
 The source of the hydrological data is the Institute of Meteorology and Water Management - National Research Institute (https://www.imgw.pl/).
