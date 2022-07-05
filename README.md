@@ -8,6 +8,7 @@ The `data` folder contains the following files:
 - `hydro_stations.csv` - list of hydrological stations (38) with name and ID
 - `lakes_temp.csv` - lake water temperature in degrees Celsius
 - `pointsFeatures.txt` - location of measurement points as a JavaScript object (this is required by Google Earth Engine)
+- `SMW_LST_L8_Lakes_newEmiss.csv` - estimated water temperatures using the Ermida et al. (2020) model
 - `coordinates` subfolder - location of measurement points as a shapefile
 - `reflectance` subfolder - raw (not cleaned) SR and TOA reflectance
 - `vector/lakes.gpkg` - extent of 4 sample lakes (Drawsko, Ełckie, Gopło, Łebsko)
