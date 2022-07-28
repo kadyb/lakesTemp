@@ -4,7 +4,20 @@ library("ggplot2")
 
 if (!dir.exists("plots")) dir.create("plots")
 
-## variable importance
+## define custom theme
+custom_theme = function() {
+  theme_bw() +
+  theme(panel.border = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.text = element_text(color = "black"),
+        axis.line = element_line(colour = "black", size = 0.5),
+        axis.title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, colour = NA))
+}
+
+
+## variable importance ---------------------------------------------------------
 mdl = readRDS("results/rf_model.rds")
 
 imp = data.frame(importance = mdl$variable.importance)
@@ -14,19 +27,12 @@ ggplot(imp, aes(x = reorder(rownames(imp), importance), y = importance)) +
   xlab("Feature") +
   ylab("Importance") +
   coord_flip()  +
-  theme_bw() +
-  theme(panel.border = element_blank(),
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        axis.text = element_text(color = "black"),
-        axis.line = element_line(colour = "black", size = 0.5),
-        axis.title = element_text(face = "bold"))
-
+  custom_theme()
 
 ggsave("plots/importance.pdf", device = cairo_pdf, width = 4, height = 3,
        units = "in")
 
-## point plot
+## point plot ------------------------------------------------------------------
 test = read.csv2("results/predictions_testset.csv")
 
 test$date = as.Date(test$date)
@@ -46,42 +52,26 @@ ggplot(test_long, aes(value, T, color = month)) +
   ylab("In-situ temperature [K]") +
   scale_color_brewer(name = "Month", palette = "Dark2") +
   facet_wrap(vars(name)) +
-  theme_bw() +
-  theme(panel.border = element_blank(),
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        axis.text = element_text(color = "black"),
-        axis.line = element_line(colour = "black", size = 0.5),
-        axis.title = element_text(face = "bold"),
-        strip.background = element_rect(fill = NA, colour = NA))
+  custom_theme()
 
 ggsave("plots/comparison.pdf", device = cairo_pdf, width = 7, height = 4,
        units = "in")
 
-## differences histogram
+## differences histogram -------------------------------------------------------
 ggplot(test_long, aes(value - T)) +
   geom_histogram(bins = 20) +
   geom_vline(xintercept = 0, linetype = "dashed", color = "red") +
   xlab("Difference [K]") +
   ylab("Frequency") +
   facet_wrap(vars(name)) +
-  theme_bw() +
-  theme(panel.border = element_blank(),
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        axis.text = element_text(color = "black"),
-        axis.line = element_line(colour = "black", size = 0.5),
-        axis.title = element_text(face = "bold"),
-        strip.background = element_rect(fill = NA, colour = NA))
+  custom_theme()
 
 ggsave("plots/differences.pdf", device = cairo_pdf, width = 7, height = 4,
        units = "in")
 
-
-## lakes with thermal profile
-plot_thermal = function(rast, mat) {
+## lakes with thermal profile --------------------------------------------------
+thermal_profile = function(rast, mat) {
   line = vect(mat, type = "lines", crs = crs(rast))
-  oldpar = par()
   color = rev(RColorBrewer::brewer.pal(11, "RdYlBu"))
 
   # plot raster with legend
@@ -95,25 +85,38 @@ plot_thermal = function(rast, mat) {
   val = val$fitted
   dist = perim(line) / length(val)
   val = data.frame(val, dist = cumsum(rep(dist, length(val))))
-  par(oldpar)
-
-  # plot thermal profile
-  plot(val$val ~ val$dist, type = "l", lwd = 4, xlab = NULL, cex.lab = 1.5,
-       cex.axis = 1.3, ylab = "Temperature [°C]", xaxt = "n")
+  return(val)
 }
 
-### Drawsko
+### Drawsko lake
 drawsko = rast("images/predict/Drawsko_T.tif")
 ll = rbind(
   c(581229, 5935728),
   c(577066, 5939950)
 )
-plot_thermal(drawsko, ll)
+drawsko_df = thermal_profile(drawsko, ll)
 
-### Lebsko
+ggplot(drawsko_df, aes(dist, val)) +
+  geom_line() +
+  annotate("text", x = -0.6, y = 20.9, label = "A", fontface = 2) +
+  annotate("text", x = 6000, y = 20.9, label = "B", fontface = 2) +
+  scale_y_continuous(breaks = seq(19, 21, by = 0.25)) +
+  xlab("Distance [km]") +
+  ylab("Temperature [°C]") +
+  custom_theme()
+
+### Lebsko lake
 lebsko = rast("images/predict/Lebsko_T.tif")
 ll = rbind(
   c(656646, 6063543),
   c(649291, 6067007)
 )
-plot_thermal(lebsko, ll)
+lebsko_df = thermal_profile(lebsko, ll)
+ggplot(lebsko_df, aes(dist, val)) +
+  geom_line() +
+  annotate("text", x = -0.6, y = 18.9, label = "A", fontface = 2) +
+  annotate("text", x = 8100, y = 18.9, label = "B", fontface = 2) +
+  scale_y_continuous(breaks = seq(17, 19, by = 0.25)) +
+  xlab("Distance [km]") +
+  ylab("Temperature [°C]") +
+  custom_theme()
