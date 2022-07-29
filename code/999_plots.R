@@ -1,5 +1,6 @@
 library("tidyr")
 library("terra")
+library("cowplot")
 library("ggplot2")
 
 if (!dir.exists("plots")) dir.create("plots")
@@ -120,3 +121,73 @@ ggplot(lebsko_df, aes(dist, val)) +
   xlab("Distance [km]") +
   ylab("Temperature [°C]") +
   custom_theme()
+
+## scenes availability ---------------------------------------------------------
+lakes_temp = read.csv2("data/lakes_temp.csv")
+lakes_temp$date = as.Date(lakes_temp$date)
+
+hydro_stations = read.csv2("data/hydro_stations.csv")
+lakes_temp = merge(lakes_temp, hydro_stations[, c(1, 3)], by = "ID")
+lakes_temp$lake = as.factor(lakes_temp$lake)
+
+TOA = read.csv2("data/TOA_processed.csv")
+TOA$date = as.Date(TOA$date)
+colnames(TOA)[1] = "ID"
+TOA$month = as.factor(as.numeric(format(TOA$date, "%m")))
+TOA$year = as.factor(format(TOA$date, "%Y"))
+
+TOA = merge(TOA, lakes_temp, by = c("ID", "date"), all.x = TRUE)
+
+n_lakes = length(unique(TOA$lake))
+n_years = length(unique(TOA$year))
+
+# availability by month
+month_agg = data.frame(table(TOA$month) / n_lakes / n_years)
+colnames(month_agg)[1] = "Month"
+month_agg$Month = month.name[4:10]
+
+# availability by year
+year_agg = data.frame(table(TOA$year) / n_lakes)
+colnames(year_agg)[1] = "Year"
+
+# availability by lake
+lakes_agg = data.frame(table(TOA$lake))
+colnames(lakes_agg)[1] = "Lake"
+lakes_agg$Lake = substring(lakes_agg$Lake, 6)
+
+# availability by temperature
+temp_agg = table(cut(TOA$T, seq(0, 28, by = 2)))
+temp_agg = data.frame(temp_agg / n_years)
+colnames(temp_agg)[1] = "Interval"
+
+## plots
+p1 = ggplot(month_agg, aes(Month, Freq)) +
+  geom_col() +
+  scale_x_discrete(limits = month_agg$Month) +
+  ylab(NULL) +
+  custom_theme()
+
+p2 = ggplot(year_agg, aes(Year, Freq)) +
+  geom_col() +
+  ylab("Average number of scenes") +
+  custom_theme()
+
+p3 = ggplot(lakes_agg, aes(reorder(Lake, Freq), Freq)) +
+  geom_col() +
+  xlab("Lake") +
+  ylab("Total number of scenes") +
+  coord_flip() +
+  custom_theme()
+
+p4 = ggplot(temp_agg, aes(Interval, Freq)) +
+  geom_col() +
+  ylab(NULL) +
+  xlab("Water temperature interval [°C]") +
+  custom_theme()
+
+
+right_side = plot_grid(p1, p2, p4, labels = c("b", "c", "d"), label_size = 14,
+                       ncol = 1)
+plot_grid(p3, right_side, labels = c("a", ""), label_size = 14, ncol = 2)
+ggsave("plots/availability.pdf", device = cairo_pdf, width = 14, height = 10,
+       units = "in")
