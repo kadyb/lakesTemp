@@ -2,21 +2,9 @@ library("tidyr")
 library("terra")
 library("cowplot")
 library("ggplot2")
+source("code/utils/custom_theme.R")
 
 if (!dir.exists("plots")) dir.create("plots")
-
-## define custom theme
-custom_theme = function() {
-  theme_bw() +
-  theme(panel.border = element_blank(),
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        axis.text = element_text(color = "black"),
-        axis.line = element_line(colour = "black", size = 0.5),
-        axis.title = element_text(face = "bold"),
-        strip.background = element_rect(fill = NA, colour = NA))
-}
-
 
 ## variable importance ---------------------------------------------------------
 mdl = readRDS("results/rf_model.rds")
@@ -48,7 +36,7 @@ test_long$month = factor(test_long$month, labels = mth)
 ggplot(test_long, aes(value, T, color = month)) +
   geom_point(alpha = 0.7, stroke = 0) +
   geom_abline(intercept = 0, slope = 1, linetype = "dashed") +
-  annotate("text", x = 278, y = 275, label = "y = x") +
+  annotate("text", x = 299, y = 303, label = "y = x") +
   xlab("Predicted temperature [K]") +
   ylab("In-situ temperature [K]") +
   scale_color_brewer(name = "Month", palette = "Dark2") +
@@ -62,6 +50,7 @@ ggsave("plots/comparison.pdf", device = cairo_pdf, width = 7, height = 4,
 ggplot(test_long, aes(value - T)) +
   geom_histogram(bins = 20) +
   geom_vline(xintercept = 0, linetype = "dashed", color = "red") +
+  scale_x_continuous(labels = scales::label_number(style_negative = "minus")) +
   xlab("Difference [K]") +
   ylab("Frequency") +
   facet_wrap(vars(name)) +

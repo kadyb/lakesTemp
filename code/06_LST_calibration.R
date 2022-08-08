@@ -26,7 +26,7 @@ calib = mean(train$ST_B10 - train$T) # determine systematic bias
 # predict and validate
 test$mdl1 = predict(mdl1, test)
 test$mdl2 = predict(mdl2, test)
-test$mdl3 = test$ST_B10 + calib
+test$mdl3 = test$ST_B10 - calib
 
 rmse = function(actual, predicted) {
   sqrt(mean((actual - predicted)^2))
@@ -41,23 +41,18 @@ round(rmse(test$T, test$mdl3), 2) #> 2.88
 ##### plots #####
 library("ggplot2")
 library("cowplot")
+source("code/utils/custom_theme.R")
 
 # scatterplot (before calibration; trainset)
 p1 = ggplot(train, aes(ST_B10, T)) +
   geom_point(alpha = 0.7, stroke = 0) +
   geom_abline(intercept = 0, slope = 1, linetype = "dashed") +
-  annotate("text", x = 278, y = 275, label = "y = x") +
+  annotate("text", x = 301, y = 305, label = "y = x") +
   xlim(c(275, 308)) +
   ylim(c(275, 308)) +
   xlab(NULL) +
   ylab("In-situ temperature [K]") +
-  theme_bw() +
-  theme(panel.border = element_blank(),
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        axis.text = element_text(color = "black"),
-        axis.line = element_line(colour = "black", size = 0.5),
-        axis.title = element_text(face = "bold"))
+  custom_theme()
 p1
 
 # histogram (before calibration; trainset)
@@ -66,47 +61,31 @@ p2 = ggplot(train, aes(ST_B10 - T)) +
   geom_vline(aes(xintercept = mean(ST_B10 - T)),
              color = "blue", linetype = "dashed", size = 1) +
   annotate("text", x = 0.5, y = 310, label = round(calib, 2), col = "blue") +
+  scale_x_continuous(labels = scales::label_number(style_negative = "minus")) +
   xlab(NULL) +
   ylab("Frequency") +
-  theme_bw() +
-  theme(panel.border = element_blank(),
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        axis.text = element_text(color = "black"),
-        axis.line = element_line(colour = "black", size = 0.5),
-        axis.title = element_text(face = "bold"))
+  custom_theme()
 p2
 
 # scatterplot (after calibration; testset)
 p3 = ggplot(test, aes(mdl1, T)) +
   geom_point(alpha = 0.7, stroke = 0) +
   geom_abline(intercept = 0, slope = 1, linetype = "dashed") +
-  annotate("text", x = 278, y = 275, label = "y = x") +
+  annotate("text", x = 301, y = 305, label = "y = x") +
   xlim(c(275, 308)) +
   ylim(c(275, 308)) +
   xlab("Landsat Surface Temperature [K]") +
   ylab("In-situ temperature [K]") +
-  theme_bw() +
-  theme(panel.border = element_blank(),
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        axis.text = element_text(color = "black"),
-        axis.line = element_line(colour = "black", size = 0.5),
-        axis.title = element_text(face = "bold"))
+  custom_theme()
 p3
 
 # histogram (after calibration; testset)
 p4 = ggplot(test, aes(mdl1 - T)) +
   geom_histogram(binwidth = 1) +
+  scale_x_continuous(labels = scales::label_number(style_negative = "minus")) +
   xlab("Temperature difference [K]") +
   ylab("Frequency") +
-  theme_bw() +
-  theme(panel.border = element_blank(),
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        axis.text = element_text(color = "black"),
-        axis.line = element_line(colour = "black", size = 0.5),
-        axis.title = element_text(face = "bold"))
+  custom_theme()
 p4
 
 plot_grid(p1, p2, p3, p4, ncol = 2)
