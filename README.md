@@ -1,5 +1,5 @@
 # Lakes temperature
-This repository contains the data, code, and results for “*The potential of monitoring the surface water temperature of lakes in Poland using Landsat 8 satellite images*” article.
+This repository contains the data, code, and results for “[Evaluation of Methods for Estimating Lake Surface Water Temperature Using Landsat 8](https://www.mdpi.com/2072-4292/14/15/3839)” article.
 
 ## Dataset
 The `data` folder contains the following files:
