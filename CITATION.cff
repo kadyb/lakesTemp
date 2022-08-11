@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+message: "If you use data or code from this repository, please cite it as below."
+preferred-citation:
+  type: article
+  authors:
+  - family-names: "Dyba"
+    given-names: "Krzysztof"
+    orcid: "https://orcid.org/0000-0002-8614-3816"
+  - family-names: "Ermida"
+    given-names: "Sofia"
+    orcid: "https://orcid.org/0000-0003-0737-0824"
+  - family-names: "Ptak"
+    given-names: "Mariusz"
+    orcid: "https://orcid.org/0000-0003-1225-1686"
+  - family-names: "Piekarczyk"
+    given-names: "Jan"
+    orcid: "https://orcid.org/0000-0002-2405-6741"
+  - family-names: "Sojka"
+    given-names: "Mariusz"
+    orcid: "https://orcid.org/0000-0002-1453-0374"
+  title: "Evaluation of Methods for Estimating Lake Surface Water Temperature Using Landsat 8"
+  journal: "Remote Sensing"
+  doi: "10.3390/rs14153839"
+  url: "https://www.mdpi.com/2072-4292/14/15/3839"
+  volume: 14
+  issue: 15
+  pages: 3839
+  year: 2022
+  month: 8
